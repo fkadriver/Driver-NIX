@@ -15,7 +15,7 @@
 #      flakeInputBundle.nixos-hardware.nixosModules.common-cpu-amd-pstate
 #      flakeInputBundle.nixos-hardware.nixosModules.common-cpu-amd
           
-      ../../modules/syncthing
+#      ../../modules/syncthing
 
  #     ../../modules/world-of-warcraft
 
