@@ -1,11 +1,15 @@
 { config, pkgs, lib, hyprland, ... }:
 
 {
-  services.xserver.enable = false;
-  services.xwayland.enable = true;
+  services.xserver.displayManager.gdm = {
+    enable = true;
+    wayland = true;
+  };
 
   programs.hyprland.enable = true;
   programs.waybar.enable = true;
+
+  services.xwayland.enable = true;
 
   environment.systemPackages = with pkgs; [
     waybar
@@ -15,7 +19,7 @@
     xdg-desktop-portal-hyprland
   ];
 
-  # Optionally pull some HyprVibe-like defaults
+  # Wayland environment variables
   environment.sessionVariables = {
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";

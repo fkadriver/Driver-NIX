@@ -35,29 +35,8 @@ in
   # Use a direct reference to the username here
   home-manager.users.${username} = import ../../home/common.nix;
 
-  # ---- GDM + Hyprland Wayland Setup ----
-  services.xserver.enable = true;
-  services.xserver.displayManager.gdm = {
-    enable = true;
-    wayland = true;
-  };
-
-  # Enable Hyprland session
-  programs.hyprland.enable = true;
-
-  # Wayland environment variables
-  environment.sessionVariables = {
-    XDG_SESSION_TYPE = "wayland";
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_DESKTOP = "Hyprland";
-  };
-
-  # Waybar multi-monitor setup (taskbar on all displays)
-  services.waybar.settings.mainBar = {
-    layer = "top";
-    position = "top";
-    output = [ "*" ]; # show on all screens
-  };
+  # ---- Display Manager (moved to wayland.nix module) ----
+  # GDM + Hyprland Wayland is configured in modules/desktop/wayland.nix
 
   # Enable sound, bluetooth, etc.
   sound.enable = true;

@@ -14,8 +14,11 @@
   in {
     nixosConfigurations.latitude-nixos = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit self nixpkgs home-manager hyprland; };
+      specialArgs = { 
+        inherit self nixpkgs home-manager hyprland; 
+      };
       modules = [
+        home-manager.nixosModules.home-manager
         ./hosts/latitude-nixos/configuration.nix
       ];
     };
