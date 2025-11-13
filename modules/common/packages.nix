@@ -1,9 +1,13 @@
 { config, pkgs, lib, ... }:
 
 {
-  environment.systemPackages = lib.mkForce (config.environment.systemPackages or []) ++ with pkgs; [
-    htop
+  environment.systemPackages = with pkgs; [
     git
-    tmux
+    vim
+    codium
+    firefox
+    slack
+    syncthing
+    tailscale
   ];
 }
