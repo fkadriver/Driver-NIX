@@ -1,7 +1,6 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Define your main user directly
   username = "scott";
   fullName = "Scott Jensen";
   groups = [ "wheel" "networkmanager" "audio" "video" ];
@@ -18,10 +17,8 @@ in
     ../../modules/desktop/wayland.nix
   ];
 
-  # Hostname
   networking.hostName = "latitude-nixos";
 
-  # User setup
   users.users.${username} = {
     isNormalUser = true;
     extraGroups = groups;
@@ -29,16 +26,8 @@ in
     shell = pkgs.zsh;
   };
 
-  # Home Manager
-  programs.home-manager.enable = true;
-
-  # Use a direct reference to the username here
   home-manager.users.${username} = import ../../home/common.nix;
 
-  # ---- Display Manager (moved to wayland.nix module) ----
-  # GDM + Hyprland Wayland is configured in modules/desktop/wayland.nix
-
-  # Enable sound, bluetooth, etc.
   sound.enable = true;
   hardware.pulseaudio.enable = false;
   services.pipewire = {
@@ -48,11 +37,9 @@ in
   };
   services.blueman.enable = true;
 
-  # Enable hardware acceleration
   hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true;
 
-  # Enable NetworkManager
   networking.networkmanager.enable = true;
 }
