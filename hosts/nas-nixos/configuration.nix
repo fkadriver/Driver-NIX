@@ -6,38 +6,34 @@ in
 {
   imports = [
     ../../modules/common/packages.nix
-    ../../modules/desktop/wayland.nix
-    # add other modules as needed
   ];
 
-  networking.hostName = "latitude-nixos";
+  networking.hostName = "nas-nixos";
   system.stateVersion = "24.05";
 
   users.users = {
     "${username}" = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "networkmanager" "audio" "video" ];
-      description = "Scott Jensen";
+      extraGroups = [ "wheel" ];
+      description = "Shared user";
       shell = pkgs.zsh;
-      # hashedPassword = builtins.getAttr "scott" (import ../../secrets/hashed-passwords.nix).hashed; 
-      # Uncomment and use a local secrets file (kept out of git).
+      # hashedPassword left to secrets/...
     };
   };
 
-  driverNix.wayland.enable = true;
+  # Headless server: no display manager
+  services.xserver.enable = false;
 
   environment.systemPackages = with pkgs; [
-    vscode
-    chromium
-    firefox
     git
+    samba
     tailscale
     syncthing
   ];
 
+  services.openssh.enable = true;
   services.tailscale.enable = true;
   services.syncthing.enable = true;
-  networking.networkmanager.enable = true;
 
   home-manager.users = {
     "${username}" = import ../common/user.nix { inherit pkgs; };

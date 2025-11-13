@@ -1,0 +1,64 @@
+name: CI – Flake check & build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl gzip
+
+      - name: Install Nix (single-user, non-daemon)
+        run: |
+          set -eux
+          # Install Nix in single-user mode (non-daemon). This is safe on GitHub runners.
+          curl -L https://nixos.org/nix/install | sh -s -- --no-daemon
+          # Source Nix profile for the rest of the job
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          echo "Nix version: $(nix --version)"
+
+      - name: Enable flakes in this session and check flake
+        env:
+          NIXPKGS_ALLOW_UNSUPPORTED_SYSTEM: x86_64-linux
+        run: |
+          set -eux
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          # Enable the experimental features for this invocation (safe per-command)
+          nix --extra-experimental-features 'nix-command flakes' flake check --show-trace
+
+      - name: Show flake outputs (informational)
+        run: |
+          set -eux
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix --extra-experimental-features 'nix-command flakes' flake show
+
+      - name: Build laptop toplevel (latitude-nixos)
+        run: |
+          set -eux
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix --extra-experimental-features 'nix-command flakes' build --print-out-paths .#nixosConfigurations.latitude-nixos.config.system.build.toplevel
+
+      - name: Build server toplevel (nas-nixos)
+        run: |
+          set -eux
+          . "$HOME/.nix-profile/etc/profile.d/nix.sh"
+          nix --extra-experimental-features 'nix-command flakes' build --print-out-paths .#nixosConfigurations.nas-nixos.config.system.build.toplevel
+
+      - name: Upload Nix build logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nix-logs
+          path: |
+            /home/runner/.cache/nix
+            /tmp

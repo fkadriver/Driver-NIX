@@ -1,31 +1,41 @@
 {
-  description = "Driver-NIX: modular NixOS flake with Home Manager, Hyprland, and tools";
+  description = "Driver-NIX - flake (blueprint-friendly, modular NixOS + home-manager)";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    hyprland.url = "github:hyprwm/Hyprland";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    home-manager.url = "github:nix-community/home-manager";
+    blueprint.url = "github:numtide/blueprint";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, hyprland, ... }:
-  let
-    system = "x86_64-linux";
-    # keep a local pkgs if you need to import it, or use nixpkgs directly below
-    # pkgs = import nixpkgs { inherit system; };
-  in {
-    nixosConfigurations.latitude-nixos = nixpkgs.lib.nixosSystem {
-      inherit system;
+  outputs = inputs@{ self, nixpkgs, "home-manager": homeManager, blueprint, ... }:
+    let
+      systems = [ "x86_64-linux" ];
+      pkgsFor = system: import nixpkgs { inherit system; };
+    in
+    {
+      # NixOS configurations for two hosts
+      nixosConfigurations = {
+        latitude-nixos = pkgsFor "x86_64-linux".lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/latitude-nixos/configuration.nix
+          ];
+          # Provide inputs to modules (so they can reference inputs.home-manager etc.)
+          specialArgs = { inherit self homeManager nixpkgs blueprint; };
+        };
 
-      # ensure Home Manager NixOS module is loaded and make flake inputs available
-      modules = [
-        home-manager.nixosModules.home-manager
-        ./hosts/latitude-nixos/configuration.nix
-      ];
+        nas-nixos = pkgsFor "x86_64-linux".lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./hosts/nas-nixos/configuration.nix
+          ];
+          specialArgs = { inherit self homeManager nixpkgs blueprint; };
+        };
+      };
 
-      specialArgs = { inherit inputs; };
-
-      # ...existing code...
+      # Expose a simple devShell for convenience (optional)
+      devShells.x86_64-linux.default = pkgsFor "x86_64-linux".mkShell {
+        buildInputs = [ pkgsFor "x86_64-linux".git ];
+      };
     };
-  };
 }

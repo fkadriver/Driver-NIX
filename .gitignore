@@ -1,5 +1,6 @@
-/result
-/flake.lock
+secrets/
+flake.lock
+result
 /nixpkgs
 *.swp
 local.nix
