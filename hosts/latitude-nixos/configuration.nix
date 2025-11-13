@@ -1,9 +1,6 @@
 { config, pkgs, lib, home-manager, hyprland, ... }:
 
 let
-  # Load the dynamic user configuration
-  user = import ./user.nix;
-
   # Load local-only overrides (e.g., Tailscale keys)
   local = import ./local.nix;
 in
