@@ -1,13 +1,12 @@
-{ config, pkgs, lib, home-manager, hyprland, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  # Load local-only overrides (e.g., Tailscale keys)
-  local = import ./local.nix;
+  # Define your main user directly
+  username = "scott";
+  fullName = "Scott Jensen";
+  groups = [ "wheel" "networkmanager" "audio" "video" ];
 in
 {
-  ####################################################################
-  # MODULE IMPORTS
-  ####################################################################
   imports = [
     ./hardware-configuration.nix
     ../../modules/common/system.nix
@@ -19,85 +18,62 @@ in
     ../../modules/desktop/wayland.nix
   ];
 
-  ####################################################################
-  # HOSTNAME
-  ####################################################################
+  # Hostname
   networking.hostName = "latitude-nixos";
 
-  ####################################################################
-  # USER SETUP
-  ####################################################################
-  users.users.${user.username} = {
+  # User setup
+  users.users.${username} = {
     isNormalUser = true;
-    extraGroups = user.groups;
-    description = user.fullName;
+    extraGroups = groups;
+    description = fullName;
     shell = pkgs.zsh;
   };
 
-  ####################################################################
-  # HOME MANAGER
-  ####################################################################
+  # Home Manager
   programs.home-manager.enable = true;
-  home-manager.users.${user.username} = import ../../home/common.nix;
 
-  ####################################################################
-  # DISPLAY MANAGER & WAYLAND
-  ####################################################################
+  # Use a direct reference to the username here
+  home-manager.users.${username} = import ../../home/common.nix;
+
+  # ---- GDM + Hyprland Wayland Setup ----
   services.xserver.enable = true;
-
-  # Use GDM with Wayland
   services.xserver.displayManager.gdm = {
     enable = true;
     wayland = true;
   };
 
-  # Enable Hyprland as the session
+  # Enable Hyprland session
   programs.hyprland.enable = true;
 
-  # Set environment variables for Wayland session
+  # Wayland environment variables
   environment.sessionVariables = {
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
     XDG_SESSION_DESKTOP = "Hyprland";
   };
 
-  ####################################################################
-  # WAYBAR MULTI-MONITOR TASKBAR
-  ####################################################################
+  # Waybar multi-monitor setup (taskbar on all displays)
   services.waybar.settings.mainBar = {
     layer = "top";
     position = "top";
-    output = [ "*" ]; # Show on all monitors
+    output = [ "*" ]; # show on all screens
   };
 
-  ####################################################################
-  # SOUND, BLUETOOTH, AND PIPEWIRE
-  ####################################################################
+  # Enable sound, bluetooth, etc.
   sound.enable = true;
   hardware.pulseaudio.enable = false;
-
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     pulse.enable = true;
   };
-
   services.blueman.enable = true;
 
-  ####################################################################
-  # HARDWARE ACCELERATION
-  ####################################################################
+  # Enable hardware acceleration
   hardware.opengl.enable = true;
   hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true;
 
-  ####################################################################
-  # NETWORK
-  ####################################################################
+  # Enable NetworkManager
   networking.networkmanager.enable = true;
-
-  # Example: Tailscale configuration loaded from local.nix
-  # local.nix should be .gitignored
-  networking.tailscale.enable = local.tailscaleEnable or false;
-  networking.tailscale.authKeyFile = local.tailscaleAuthKeyFile;
 }

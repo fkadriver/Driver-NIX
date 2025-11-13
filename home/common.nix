@@ -1,24 +1,17 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  imports = [
-    ./hyprland.nix
-  ];
-
-  home.stateVersion = "24.11";
-
   programs.zsh.enable = true;
-  programs.git = {
-    enable = true;
-    userName = "Driver User";
-    userEmail = "driver@example.com";
-  };
+  programs.git.enable = true;
+  programs.home-manager.enable = true;
 
+  # Example packages
   home.packages = with pkgs; [
-    neovim
+    vim
     htop
-    zoxide
+    neovim
   ];
 
-  services.syncthing.enable = true;
+  # Hyprland related
+  programs.hyprland.enable = true;
 }
