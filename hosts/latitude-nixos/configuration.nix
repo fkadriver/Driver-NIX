@@ -26,7 +26,7 @@ in
     shell = pkgs.zsh;
   };
 
-  home-manager.users.${username} = import ../../home/common.nix;
+  home-manager.users.${username} = import ./user.nix { inherit pkgs inputs; };
 
   sound.enable = true;
   hardware.pulseaudio.enable = false;
