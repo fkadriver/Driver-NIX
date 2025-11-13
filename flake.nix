@@ -3,39 +3,48 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
-    home-manager.url = "github:nix-community/home-manager";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     blueprint.url = "github:numtide/blueprint";
   };
 
-  outputs = inputs@{ self, nixpkgs, "home-manager": homeManager, blueprint, ... }:
+  outputs = inputs@{ self, nixpkgs, blueprint, ... }:
     let
-      systems = [ "x86_64-linux" ];
-      pkgsFor = system: import nixpkgs { inherit system; };
+      # read the hyphenated input from inputs
+      homeManager = inputs."home-manager";
+
+      # target system
+      system = "x86_64-linux";
+
+      # import a pkgs for the target system
+      pkgs = import nixpkgs { inherit system; };
     in
     {
       # NixOS configurations for two hosts
       nixosConfigurations = {
-        latitude-nixos = pkgsFor "x86_64-linux".lib.nixosSystem {
-          system = "x86_64-linux";
+        latitude-nixos = nixpkgs.lib.nixosSystem {
+          inherit system;
           modules = [
             ./hosts/latitude-nixos/configuration.nix
           ];
-          # Provide inputs to modules (so they can reference inputs.home-manager etc.)
-          specialArgs = { inherit self homeManager nixpkgs blueprint; };
+          # pass useful inputs into modules
+          specialArgs = { inherit self homeManager nixpkgs inputs; };
         };
 
-        nas-nixos = pkgsFor "x86_64-linux".lib.nixosSystem {
-          system = "x86_64-linux";
+        nas-nixos = nixpkgs.lib.nixosSystem {
+          inherit system;
           modules = [
             ./hosts/nas-nixos/configuration.nix
           ];
-          specialArgs = { inherit self homeManager nixpkgs blueprint; };
+          specialArgs = { inherit self homeManager nixpkgs inputs; };
         };
       };
 
-      # Expose a simple devShell for convenience (optional)
-      devShells.x86_64-linux.default = pkgsFor "x86_64-linux".mkShell {
-        buildInputs = [ pkgsFor "x86_64-linux".git ];
+      # simple devShell
+      devShells.x86_64-linux.default = pkgs.mkShell {
+        buildInputs = [ pkgs.git ];
       };
     };
 }

@@ -21,8 +21,8 @@
 
   # Ensure the aliases are loaded in interactive shells
   programs.bash.initExtra = ''
-    if [ -f "${config.home.homeDirectory}/.bash_aliases" ]; then
-      . "${config.home.homeDirectory}/.bash_aliases"
+    if [ -f $HOME/.bash_aliases ]; then
+      . $HOME/.bash_aliases
     fi
   '';
 

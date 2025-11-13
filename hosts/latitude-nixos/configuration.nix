@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, homeManager, ... }:
 
 let
   username = "scott";
@@ -7,39 +7,52 @@ in
   imports = [
     ../../modules/common/packages.nix
     ../../modules/desktop/wayland.nix
-    # add other modules as needed
+    # Home Manager NixOS module (provided via flake specialArgs)
+    homeManager.nixosModules.home-manager
   ];
 
   networking.hostName = "latitude-nixos";
+
   system.stateVersion = "24.05";
 
   users.users = {
     "${username}" = {
       isNormalUser = true;
       extraGroups = [ "wheel" "networkmanager" "audio" "video" ];
-      description = "Scott Jensen";
       shell = pkgs.zsh;
-      # hashedPassword = builtins.getAttr "scott" (import ../../secrets/hashed-passwords.nix).hashed; 
-      # Uncomment and use a local secrets file (kept out of git).
     };
   };
 
+  # Home-manager configuration
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    sharedModules = [
+      {
+        disabledModules = [ "services/mako.nix" ];
+      }
+    ];
+    users = {
+      "${username}" = import ../common/user.nix { inherit pkgs; };
+    };
+  };
+
+  # Enable the system-level wayland helpers
   driverNix.wayland.enable = true;
+
+  services.xserver.enable = true;
 
   environment.systemPackages = with pkgs; [
     vscode
     chromium
     firefox
-    git
     tailscale
     syncthing
   ];
 
   services.tailscale.enable = true;
   services.syncthing.enable = true;
-  networking.networkmanager.enable = true;
+  services.openssh.enable = true;
 
-  home-manager.users = {
-    "${username}" = import ../common/user.nix { inherit pkgs; };
-  };
+  networking.networkmanager.enable = true;
 }
