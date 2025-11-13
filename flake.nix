@@ -8,19 +8,21 @@
     hyprland.url = "github:hyprwm/Hyprland";
   };
 
-  outputs = inputs@{ ... }: let
+  outputs = inputs@{ self, nixpkgs, home-manager, hyprland, ... }:
+  let
     system = "x86_64-linux";
+    # keep a local pkgs if you need to import it, or use nixpkgs directly below
+    # pkgs = import nixpkgs { inherit system; };
   in {
     nixosConfigurations.latitude-nixos = nixpkgs.lib.nixosSystem {
       inherit system;
 
-      # make sure the home-manager NixOS module is loaded before your host config
+      # ensure Home Manager NixOS module is loaded and make flake inputs available
       modules = [
-        inputs.home-manager.nixosModules.home-manager
+        home-manager.nixosModules.home-manager
         ./hosts/latitude-nixos/configuration.nix
       ];
 
-      # expose flake inputs to NixOS modules (so user.nix can reference `inputs`)
       specialArgs = { inherit inputs; };
 
       # ...existing code...

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, hyprland, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   services.xserver.displayManager.gdm = {
@@ -6,43 +6,34 @@
     wayland = true;
   };
 
-  programs.hyprland.enable = true;
-  programs.waybar.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    waybar
-    wl-clipboard
-    xdg-desktop-portal
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland
-  ];
-
-  # Wayland environment variables
-  environment.sessionVariables = {
-    XDG_SESSION_TYPE = "wayland";
-    XDG_CURRENT_DESKTOP = "Hyprland";
-    XDG_SESSION_DESKTOP = "Hyprland";
+  # Provide a small, safe wayland helper module for system-level bits.
+  # IMPORTANT: Do not set `home-manager.users.<user>.*` options from here.
+  # Per-user Hyprland / Wayland programs belong in the user's home-manager
+  # configuration (e.g. hosts/latitude-nixos/user.nix).
+  options = {
+    services.wayland = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable minimal system-level Wayland helpers (does NOT configure per-user Hyprland).";
+    };
   };
 
-  home-manager.users.scott = {
-    home.packages = [
-      pkgs.waybar
-      pkgs.wl-clipboard
-      pkgs.xdg-desktop-portal
-      pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xwayland
+  config = lib.mkIf config.services.wayland {
+    # System-level helpers only. Keep packages minimal; let users enable
+    # Hyprland in their home-manager configuration if desired.
+    environment.systemPackages = with pkgs; (config.environment.systemPackages or []) ++ [
+      # Optionally add common Wayland utilities (user can remove/add in their own config)
+      wl-clipboard
+      wayland-utils
+      pipewire
+      # If you need xdg-portal support for Hyprland at the system level:
+      xdg-desktop-portal
+      # don't add hyprland here; prefer explicit per-user enablement in home-manager
     ];
 
-    programs.waybar.enable = true;
-    programs.hyprland.enable = true;
-
-    # Set the appropriate environment variables for Wayland
-    sessionVariables = {
-      XDG_SESSION_TYPE = "wayland";
-      XDG_CURRENT_DESKTOP = "Hyprland";
-      XDG_SESSION_DESKTOP = "Hyprland";
-    };
+    # Do NOT set home-manager.users.<user>.* here — it's the source of the error.
+    # Example of correct place for Hyprland (in hosts/latitude-nixos/user.nix):
+    #   programs.hyprland.enable = true;
+    #   programs.hyprland.config = { ... };
   };
 }

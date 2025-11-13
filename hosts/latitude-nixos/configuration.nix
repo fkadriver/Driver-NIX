@@ -19,14 +19,23 @@ in
 
   networking.hostName = "latitude-nixos";
 
-  users.users.${username} = {
-    isNormalUser = true;
-    extraGroups = groups;
-    description = fullName;
-    shell = pkgs.zsh;
+  # Ensure NixOS knows the system version for state migration checks
+  system.stateVersion = "24.05"; # latest stable release (update if you target a newer one)
+
+  # Explicit attribute sets avoid subtle interpolation/evaluation issues
+  users.users = {
+    "${username}" = {
+      isNormalUser = true;
+      extraGroups = groups;
+      description = fullName;
+      shell = pkgs.zsh;
+    };
   };
 
-  home-manager.users.${username} = import ./user.nix { inherit pkgs inputs; };
+  # Home-manager user entry as an explicit attrset
+  home-manager.users = {
+    "${username}" = import ./user.nix { inherit pkgs; };
+  };
 
   sound.enable = true;
   hardware.pulseaudio.enable = false;

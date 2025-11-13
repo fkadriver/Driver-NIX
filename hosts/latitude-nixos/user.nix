@@ -1,16 +1,11 @@
+{ pkgs, ... }:
+
 {
-  username = "scott";
-  fullName = "Scott Jensen";
-  uid = 1000;
-  groups = [ "wheel" "networkmanager" "video" ];
+  # Basic Home Manager user module — keep minimal for stability.
+  # NixOS already declares the system user; don't set home.username or home.fullName here.
+  home.stateVersion = "24.11"; # match your Home Manager / nixpkgs release
+  home.packages = [ ];
 
-  # `inputs` is available because flake.nix sets specialArgs = { inherit inputs; }
-  hyprImports = if builtins.hasAttr "hyprland" inputs then [ inputs.hyprland.homeManagerModules.hyprland ] else [];
-  imports = hyprImports;
-
-  # move hyprland settings here
-  programs.hyprland = {
-    enable = true;
-    # add user-specific hyprland options here
-  };
+  # Hyprland/Home‑Manager integration removed for stability.
+  # Re-add imports/programs.hyprland once the hyprland HM module is provided and imported.
 }
