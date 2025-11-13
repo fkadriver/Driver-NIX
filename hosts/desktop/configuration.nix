@@ -27,7 +27,7 @@ in
 
   programs.home-manager.enable = true;
   home-manager.users.${user.username} = { pkgs, ... }: {
-    home.stateVersion = "24.11";
+    home.stateVersion = "23.11";
     programs.zsh.enable = true;
     home.packages = with pkgs; [ git tmux ];
   };

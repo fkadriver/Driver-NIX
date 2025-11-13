@@ -28,5 +28,5 @@
 
   # Optionally expose some home-manager managed services
   # e.g. syncthing via home-manager (the system also enables syncthing)
-  programs.syncthing.enable = true;
+  # programs.syncthing.enable = true;
 }

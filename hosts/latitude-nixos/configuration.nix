@@ -13,7 +13,7 @@ in
 
   networking.hostName = "latitude-nixos";
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "22.11";
 
   users.users = {
     "${username}" = {
@@ -46,13 +46,13 @@ in
     vscode
     chromium
     firefox
-    tailscale
-    syncthing
+    # tailscale
+    # syncthing
   ];
 
-  services.tailscale.enable = true;
-  services.syncthing.enable = true;
-  services.openssh.enable = true;
+  # services.tailscale.enable = true;
+  # services.syncthing.enable = true;
+  # services.openssh.enable = true;
 
   networking.networkmanager.enable = true;
 }
