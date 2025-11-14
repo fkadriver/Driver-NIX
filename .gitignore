@@ -1,6 +1,6 @@
-secrets/
-flake.lock
+# direnv
+.direnv/
+
+# nix
 result
-/nixpkgs
-*.swp
-local.nix
+result-*
