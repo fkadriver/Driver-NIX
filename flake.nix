@@ -11,7 +11,7 @@
     in
     {
       nixosConfigurations = {
-        latitude-nixos = import ./nixosConfigurations/latitude-nixos.nix flakeContext;
+        latitude-nixos = import ./hosts/latitude-nixos/system.nix flakeContext;
         nixos = import ./nixosConfigurations/nixos.nix flakeContext;
       };
     };

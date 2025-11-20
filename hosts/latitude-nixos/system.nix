@@ -12,8 +12,7 @@ let
               "networkmanager"
               "wheel"
             ];
-            initialHashedPassword = $y$j9T$
-              TqMt3I723budo6afJM6aG.$/1DVTm29z2pjnTKBt88gFakWufNa.WC0T0EmsfFKXz4;
+            initialHashedPassword = "$y$j9T$TqMt3I723budo6afJM6aG.$/1DVTm29z2pjnTKBt88gFakWufNa.WC0T0EmsfFKXz4";
               isNormalUser = true;
           };
         };
