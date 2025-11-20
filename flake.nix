@@ -14,5 +14,9 @@
         latitude-nixos = import ./hosts/latitude-nixos/system.nix flakeContext;
         nixos = import ./nixosConfigurations/nixos.nix flakeContext;
       };
-    };
+      nixosModules = {
+        bitwarden = import ./modules/bitwarden.nix flakeContext;
+        tailscale = import ./nixosModules/tailscale.nix flakeContext;
+      };
+  };
 }
