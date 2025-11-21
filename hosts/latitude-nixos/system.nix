@@ -1,6 +1,9 @@
 { inputs, ... }@flakeContext:
 let
   nixosModule = { config, lib, pkgs, ... }: {
+    imports = [
+      inputs.self.nixosModules.bitwarden
+    ];
     config = {
       system = {
         stateVersion = "25.04";
@@ -13,7 +16,7 @@ let
               "wheel"
             ];
             initialHashedPassword = "$y$j9T$TqMt3I723budo6afJM6aG.$/1DVTm29z2pjnTKBt88gFakWufNa.WC0T0EmsfFKXz4";
-              isNormalUser = true;
+            isNormalUser = true;
           };
         };
       };

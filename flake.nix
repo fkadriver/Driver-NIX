@@ -12,7 +12,7 @@
     {
       nixosConfigurations = {
         latitude-nixos = import ./hosts/latitude-nixos/system.nix flakeContext;
-        nixos = import ./nixosConfigurations/nixos.nix flakeContext;
+        latitude-base = import ./hosts/latitude-nixos/configuration.nix flakeContext;
       };
       nixosModules = {
         bitwarden = import ./modules/bitwarden.nix flakeContext;
