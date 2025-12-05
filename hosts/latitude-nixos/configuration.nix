@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ~/git/Driver-NIX/modules/vscode-with-extension.nix
     ];
 
   # Bootloader.
@@ -28,7 +29,7 @@
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-  time.timeZone = "America/New_York";
+  time.timeZone = "America/Chicago";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -85,7 +86,7 @@
     isNormalUser = true;
     description = "Scott Jensen";
     extraGroups = [ "networkmanager" "wheel" ];
-    initialHashedPassword = "$y$j9T$TqMt3I723budo6afJM6aG.$/1DVTm29z2pjnTKBt88gFakWufNa.WC0T0EmsfFKXz4";
+    password = "nixos";
     packages = with pkgs; [
     #  thunderbird
     ];
